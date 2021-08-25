@@ -23,17 +23,17 @@ contract PoolEth is Ownable {
         State state;
     }
 
-    Deposit [] deposits;
-    mapping(address => Reward []) rewards; 
+    Deposit [] private deposits;
+    mapping(address => Reward []) private rewards; 
     
     uint public totalPool;
-    mapping(address => uint) balances;
+    mapping(address => uint) private balances;
 
-    address[] public stakers;
-    mapping(address => bool) hasStaked;
+    address[] private stakers;
+    mapping(address => bool) private hasStaked;
 
     modifier onlyUser() {
-        require(msg.sender != owner(), 'PoolEth: does not have permissions');
+        require(msg.sender != owner(), "PoolEth: does not have permissions");
         _;
     }
 
