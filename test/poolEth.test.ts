@@ -81,6 +81,15 @@ describe('PoolEth', () => {
     it('getReward', async () => {
       expect(await poolEth.connect(userA).getReward()).to.eq(0)
     })
+
+    it('stake and harvest without equipment deposit', async () => {
+      await poolEth.connect(userA).stake({ value: ethers.utils.parseEther('100.0') })
+      expect(await poolEth.connect(userA).totalPool()).to.eq(ethers.utils.parseEther('100.0'))
+      expect(await poolEth.connect(userA).getReward()).to.eq(0)
+      await poolEth.connect(userA).harvest()
+      expect(await poolEth.connect(userA).getReward()).to.eq(0)
+      expect(await poolEth.connect(userA).totalPool()).to.eq(0)
+    })
   })
 
   describe('Interactive', async () => {
