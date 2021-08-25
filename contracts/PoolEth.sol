@@ -60,12 +60,13 @@ contract PoolEth is Ownable {
     }
 
     function harvest() external onlyUser {
-        uint amount = _availableAmount(); 
+        uint amount = _availableAmount();
         require(amount > 0, "PoolEth: it has no amount");
 
         _changeStateRewards();
+        uint auxBalance = balances[msg.sender];
         balances[msg.sender] = 0;
-        totalPool -= amount;
+        totalPool -= auxBalance;
 
         payable(msg.sender).transfer(amount);
     }
@@ -89,7 +90,7 @@ contract PoolEth is Ownable {
         for (uint i; i < stakers.length; i++) {
             uint percentage = balances[stakers[i]] * 100 / totalPool;
             uint amount = percentage * msg.value / 100;
-            rewards[msg.sender].push(Reward(idDeposit, amount, percentage, State.DEPOSITED));
+            rewards[stakers[i]].push(Reward(idDeposit, amount, percentage, State.DEPOSITED));
         }
     }
     
