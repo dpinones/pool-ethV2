@@ -3,6 +3,8 @@ dotenv.config()
 
 import { HardhatUserConfig } from 'hardhat/types'
 import { task } from 'hardhat/config'
+import { ethers } from 'hardhat'
+import { Signer, utils } from 'ethers'
 
 // Plugins
 
@@ -61,6 +63,14 @@ task('accounts', 'Prints the list of accounts', async (taskArgs, bre) => {
   for (const account of accounts) {
     console.log(await account.getAddress())
   }
+})
+
+task('balance', 'Print total amount ', async (taskArgs, bre) => {
+  const PoolEth = await bre.ethers.getContractFactory("PoolEth");
+  let poolEth = await PoolEth.deploy();
+  await poolEth.deployed();
+  let balance = await poolEth.totalPool();
+  console.log("The total amount of ETH held in the contract:", balance.toNumber());
 })
 
 // Config
