@@ -26,9 +26,6 @@ describe('PoolEth', () => {
     const counterFactory = (await getContractFactory('PoolEth', signers[0])) as PoolEth__factory
     poolEth = await counterFactory.deploy()
     await poolEth.deployed()
-    const owner = await poolEth.owner();
-
-    expect(owner).to.eq(await deployer.address);
   })
 
   describe('deploy', async () => {
