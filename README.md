@@ -1,57 +1,32 @@
-# Ethereum Solidity Starter
+## ETHPool
 
-This is a skeleton repository to work as a foundation for a smart contracts project using Solidity.
+#### Sumary
+ETHPool provides a service where people can deposit ETH and they will receive weekly rewards. Users must be able to take out their deposits along with their portion of rewards at any time. New rewards are deposited manually into the pool by the ETHPool team each week using a contract function.
 
-## Quickstart
+#### Contract
 
-1. Clone the repo
-2. Run `yarn install`
+* **Stake**
+    * The team cannot stake.
+    * The amount to stake must be greater than 0.
 
-## What’s Included?
+* **Compound**
+    *If you have rewards, it is added to the current Staked balance.
 
-- **[Hardhat](https://hardhat.org/)**: Ethereum development environment for professionals.
-- **[Waffle](https://getwaffle.io/)**: The most advanced framework for testing smart contracts
-- **[Typechain](https://github.com/ethereum-ts/TypeChain)**: TypeScript bindings for Ethereum smart contracts
-- **[Tenderly](https://tenderly.co/)**: Real-time monitoring, alerting, and troubleshooting for Smart Contracts.
-- **[Ethers]()**: A complete Ethereum wallet implementation and utilities in JavaScript (and TypeScript).
-- **[Etherscan](https://etherscan.io)**: Verify contracts in The Ethereum Blockchain Explorer
+* **Deposit**
+    * Only the team can deposit.
+    * The amount to be deposited must be greater than 0.
+    * If there is not stakers can not deposit.
+    * The rewards are distributed at this time and the current pool is closed.
+    * There are no deposit limits.
 
-#### Hardhat Plugins
-- ABI Exporter
-- Gas Reporter
-- Contract Sizer
-- OpenZeppelin Upgrades
-## Usage
+* **Harvest**
+    * If the staker has balance or rewards or both, he can withdraw.
+    * When withdrawing, the balance is empty and rewards are assigned a check mark that they have already withdrawn.
 
-Look at the `package.json` inside scripts section to see available commands. A number of helper build scripts are located in `/scripts`.
-### Build contracts
+* **Clarifications:**
 
-Compiles contracts and creates Typechain bindings.
-
-`yarn build`
-
-### Run tests
-
-Runs all tests in the `/test` folder.
-
-`yarn test`
-
-### Run tests with gas report
-
-Run all tests calculating gas estimations.
-
-`yarn test:gas`
-
-The gas report will be saved on the `/reports` folder.
-
-### Deploy to Ethereum
-
-Create/modify network config in hardhat.config.ts and add API key and private key, then run:
-
-`npx hardhat run --network rinkeby scripts/deploy.ts`
-
-### Verify on Etherscan
-
-Using the hardhat-etherscan plugin, add Etherscan API key to hardhat.config.ts, then run:
-
-`npx hardhat verify --network rinkeby <DEPLOYED ADDRESS>`
+    Rewards are distributed to bettors once the team deposits. 
+    Once the deposit is made, the balances that are in the previous pool are automatically transferred to the next current pool.
+    When distributing the rewards it is not entirely accurate.
+    A staker can bet as many times as he wants.
+    
