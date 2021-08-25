@@ -51,7 +51,7 @@ contract PoolEth is Ownable {
         hasStaked[msg.sender] = true;
     }
     
-    function compound() external {
+    function compound() external onlyUser {
         uint rewardAmount = getReward();
         require(rewardAmount > 0, "PoolEth: has no rewards");
         _changeStateRewards();
@@ -82,15 +82,16 @@ contract PoolEth is Ownable {
                 rewardsStaker[i].state = State.WITHDRAWN;
             }
         }
-    } 
+    }
 
     function addDeposit() external payable onlyOwner {
+        require(msg.value > 0, "PoolEth: amount can not be 0");
+        require(totalPool > 0, "PoolEth: no users in pool");
         deposits.push(Deposit(msg.value, block.timestamp));
         uint idDeposit = deposits.length -1;
         for (uint i; i < stakers.length; i++) {
             if(balances[stakers[i]] > 0){
-                uint percentage = balances[stakers[i]] * 100 / totalPool;
-                console.log('deposit: %s, percentage: %s', msg.value, percentage);
+                uint percentage = (balances[stakers[i]] * 100) / totalPool;
                 uint amount = percentage * msg.value / 100;
                 rewards[stakers[i]].push(Reward(idDeposit, amount, percentage, State.DEPOSITED));
             }
