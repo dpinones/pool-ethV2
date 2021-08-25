@@ -88,9 +88,12 @@ contract PoolEth is Ownable {
         deposits.push(Deposit(msg.value, block.timestamp));
         uint idDeposit = deposits.length -1;
         for (uint i; i < stakers.length; i++) {
-            uint percentage = balances[stakers[i]] * 100 / totalPool;
-            uint amount = percentage * msg.value / 100;
-            rewards[stakers[i]].push(Reward(idDeposit, amount, percentage, State.DEPOSITED));
+            if(balances[stakers[i]] > 0){
+                uint percentage = balances[stakers[i]] * 100 / totalPool;
+                console.log('deposit: %s, percentage: %s', msg.value, percentage);
+                uint amount = percentage * msg.value / 100;
+                rewards[stakers[i]].push(Reward(idDeposit, amount, percentage, State.DEPOSITED));
+            }
         }
     }
     
