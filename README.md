@@ -29,4 +29,9 @@ ETHPool provides a service where people can deposit ETH and they will receive we
     Once the deposit is made, the balances that are in the previous pool are automatically transferred to the next current pool.
     When distributing the rewards it is not entirely accurate.
     A staker can bet as many times as he wants.
-    
+
+
+#### Contract deployment
+ * **ETHPool**
+    * Newtwork: Ropsten 
+    * Contract address : 0x12B930c1F8e023Bc9D2DB1757Cc55ED7E73FB598 
