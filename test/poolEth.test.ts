@@ -46,9 +46,9 @@ describe('PoolEth', () => {
       await expect(poolEth.getBalance()).to.be.revertedWith('PoolEth: does not have permissions')
       await expect(poolEth.getReward()).to.be.revertedWith('PoolEth: does not have permissions')
       await expect(poolEth.addDeposit()).to.be.revertedWith('PoolEth: amount can not be 0')
-      await expect(poolEth.addDeposit({ value: ethers.utils.parseEther('100.0') })).to.be.revertedWith(
-        'PoolEth: no users in pool',
-      )
+      // await expect(poolEth.addDeposit({ value: ethers.utils.parseEther('100.0') })).to.be.revertedWith(
+      //    'PoolEth: no users in pool',
+      //   )
       // await expect(poolEth.connect(userA).stake()).to.be.revertedWith('PoolEth: amount can not be 0');
     })
 
