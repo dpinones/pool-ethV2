@@ -46,14 +46,11 @@ describe('PoolEth', () => {
       await expect(poolEth.getBalance()).to.be.revertedWith('PoolEth: does not have permissions')
       await expect(poolEth.getReward()).to.be.revertedWith('PoolEth: does not have permissions')
       await expect(poolEth.addDeposit()).to.be.revertedWith('PoolEth: amount can not be 0')
-      // await expect(poolEth.addDeposit({ value: ethers.utils.parseEther('100.0') })).to.be.revertedWith(
-      //    'PoolEth: no users in pool',
-      //   )
-      // await expect(poolEth.connect(userA).stake()).to.be.revertedWith('PoolEth: amount can not be 0');
     })
 
     it('add Deposit', async () => {
       await poolEth.connect(userA).stake({ value: ethers.utils.parseEther('100.0') })
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(1)
       await poolEth.addDeposit({ value: ethers.utils.parseEther('200.0') })
       expect(await poolEth.connect(userA).getReward()).to.eq(ethers.utils.parseEther('200.0'))
     })
@@ -86,9 +83,11 @@ describe('PoolEth', () => {
       await poolEth.connect(userA).stake({ value: ethers.utils.parseEther('100.0') })
       expect(await poolEth.connect(userA).totalPool()).to.eq(ethers.utils.parseEther('100.0'))
       expect(await poolEth.connect(userA).getReward()).to.eq(0)
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(1)
       await poolEth.connect(userA).harvest()
       expect(await poolEth.connect(userA).getReward()).to.eq(0)
       expect(await poolEth.connect(userA).totalPool()).to.eq(0)
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(0)
     })
   })
 
@@ -112,7 +111,9 @@ describe('PoolEth', () => {
 
       //stake
       await poolEth.connect(userA).stake({ value: ethers.utils.parseEther('100.0') })
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(1)
       await poolEth.connect(userB).stake({ value: ethers.utils.parseEther('300.0') })
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(2)
       expect(await poolEth.connect(userA).totalPool()).to.eq(ethers.utils.parseEther('400.0'))
 
       //deposit
@@ -124,7 +125,9 @@ describe('PoolEth', () => {
 
       //harvest
       await poolEth.connect(userA).harvest()
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(1)
       await poolEth.connect(userB).harvest()
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(0)
 
       //check
       expect(await poolEth.connect(userA).getBalance()).to.eq(0)
