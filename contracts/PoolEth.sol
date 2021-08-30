@@ -80,4 +80,8 @@ contract PoolEth is Ownable {
     function getReward() public view onlyUser returns (uint256) {
         return rewards[msg.sender];
     }
+
+    function getNumberOfStakers() external view onlyUser returns (uint256) {
+        return stakers.length;
+    }
 }
