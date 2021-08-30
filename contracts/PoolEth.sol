@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "hardhat/console.sol";
 
-contract PoolEth is Ownable {
+contract PoolEth is Ownable, AccessControl {
+    bytes32 public constant TEAM_ROLE = keccak256("TEAM_ROLE");
+
     mapping(address => uint256) private rewards;
 
     uint256 public totalPool;
@@ -13,8 +16,17 @@ contract PoolEth is Ownable {
     address[] private stakers;
     mapping(address => bool) private hasStaked;
 
+    constructor() {
+        _setupRole(TEAM_ROLE, msg.sender);
+    }
+
     modifier onlyUser() {
-        require(msg.sender != owner(), "PoolEth: does not have permissions");
+        require(!hasRole(TEAM_ROLE, msg.sender), "PoolEth: does not have permissions");
+        _;
+    }
+
+    modifier onlyTeam() {
+        require(hasRole(TEAM_ROLE, msg.sender), "PoolEth: does not have permissions");
         _;
     }
 
@@ -66,7 +78,7 @@ contract PoolEth is Ownable {
         stakers.pop();
     }
 
-    function addDeposit() external payable onlyOwner {
+    function addDeposit() external payable onlyTeam {
         require(msg.value > 0, "PoolEth: amount can not be 0");
         for (uint256 i; i < stakers.length; i++) {
             rewards[stakers[i]] += (((balances[stakers[i]] * 100) / totalPool) * msg.value) / 100;
@@ -83,5 +95,14 @@ contract PoolEth is Ownable {
 
     function getNumberOfStakers() external view onlyUser returns (uint256) {
         return stakers.length;
+    }
+
+    function addUserToTeam(address user) external onlyOwner {
+        _setupRole(TEAM_ROLE, user);
+    }
+
+    function removeUserToTeam() external onlyTeam {
+        require(owner() != msg.sender, "PoolEth: does not have permissions");
+        renounceRole(TEAM_ROLE, msg.sender);
     }
 }

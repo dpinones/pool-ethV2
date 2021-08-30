@@ -9,7 +9,7 @@ const { getContractFactory, getSigners } = ethers
 
 describe('PoolEth', () => {
   let poolEth: PoolEth
-  let deployer, userA, userB
+  let deployer, userA, userB, userToTeam
   let ether1, ether2, ether3
 
   beforeEach(async () => {
@@ -18,6 +18,7 @@ describe('PoolEth', () => {
     deployer = signers[0]
     userA = signers[1]
     userB = signers[2]
+    userToTeam = signers[3]
 
     ether1 = { value: ethers.utils.parseEther('10.0') }
     ether2 = { value: ethers.utils.parseEther('20.0') }
@@ -341,6 +342,65 @@ describe('PoolEth', () => {
       //reward
       expect(await poolEth.connect(userA).getReward()).to.eq(ethers.utils.parseEther('750.0'))
       expect(await poolEth.connect(userA).totalPool()).to.eq(ethers.utils.parseEther('100.0'))
+    })
+  })
+
+  describe('Role', async () => {
+    // it('getBalance', async () => {
+    //   expect(await poolEth.connect(userA).getBalance()).to.eq(0)
+    // })
+
+    // it('getReward', async () => {
+    //   expect(await poolEth.connect(userA).getReward()).to.eq(0)
+    // })
+
+    it('add role remove role', async () => {
+      /* 
+      userA -> stake -> 100
+      userB -> stake -> 300
+      team -> deposit -> 200
+
+      expected response:
+      userA -> reward -> 50
+      userB -> reward -> 150 
+      pool -> 
+      */
+
+      //check
+      expect(await poolEth.connect(userA).totalPool()).to.eq(0)
+      expect(await poolEth.connect(userA).getBalance()).to.eq(0)
+      expect(await poolEth.connect(userB).getBalance()).to.eq(0)
+
+      //stake
+      await poolEth.connect(userA).stake({ value: ethers.utils.parseEther('100.0') })
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(1)
+      await poolEth.connect(userB).stake({ value: ethers.utils.parseEther('300.0') })
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(2)
+      expect(await poolEth.connect(userA).totalPool()).to.eq(ethers.utils.parseEther('400.0'))
+
+      //deposit
+      await poolEth.addUserToTeam(userToTeam.address)
+      await poolEth.connect(userToTeam).addDeposit({ value: ethers.utils.parseEther('200.0') })
+
+      //reward
+      expect(await poolEth.connect(userA).getReward()).to.eq(ethers.utils.parseEther('50.0'))
+      expect(await poolEth.connect(userB).getReward()).to.eq(ethers.utils.parseEther('150.0'))
+
+      //harvest
+      await poolEth.connect(userA).harvest()
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(1)
+      await poolEth.connect(userB).harvest()
+      expect(await poolEth.connect(userA).getNumberOfStakers()).to.eq(0)
+
+      //check
+      expect(await poolEth.connect(userA).getBalance()).to.eq(0)
+      expect(await poolEth.connect(userB).getBalance()).to.eq(0)
+      expect(await poolEth.connect(userA).totalPool()).to.eq(0)
+
+      //remove role
+      await poolEth.connect(userToTeam).removeUserToTeam()
+      await expect(
+        poolEth.connect(userToTeam).addDeposit({ value: ethers.utils.parseEther('200.0') })).to.be.revertedWith('PoolEth: does not have permissions')
     })
   })
 })
